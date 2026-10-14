@@ -1,0 +1,129 @@
+{
+  "version": "0.4.43",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1485.0,
+          475.83333333333337
+        ],
+        [
+          1545.0,
+          538.3333333333334
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1507.5,
+          355.83333333333337
+        ],
+        [
+          1533.3333333333335,
+          379.16666666666663
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1097.5,
+          439.16666666666663
+        ],
+        [
+          1140.0,
+          480.83333333333337
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1122.5,
+          410.83333333333337
+        ],
+        [
+          1153.3333333333335,
+          439.16666666666663
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1062.5,
+          491.66666666666663
+        ],
+        [
+          1123.3333333333335,
+          570.8333333333334
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          1509.1666666666667,
+          571.6666666666666
+        ],
+        [
+          1537.5,
+          627.5
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          1017.5,
+          522.5
+        ],
+        [
+          1035.0,
+          569.1666666666666
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "ch07_20251104180001_20251112174239_000078.jpg",
+  "imageData": null,
+  "imageHeight": 1080,
+  "imageWidth": 1920
+}

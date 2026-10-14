@@ -25,3 +25,6 @@ data/*
 !data/README.md
 runtime/
 目录与来源_请确认.md
+
+# Sensitive source data is distributed only as explicitly approved release assets
+data/

@@ -1,0 +1,113 @@
+{
+  "version": "0.4.43",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1410.3005398177506,
+          400.98945169682696
+        ],
+        [
+          1450.0,
+          426.94444444444446
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1369.1109601846133,
+          365.72972445837604
+        ],
+        [
+          1386.6666666666667,
+          385.41666666666663
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1170.221088435374,
+          412.84013605442175
+        ],
+        [
+          1208.9795918367345,
+          443.0612244897959
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          1903.7499557969302,
+          450.1550737588288
+        ],
+        [
+          1917.0806100217865,
+          479.4117647058824
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          1892.5126452439395,
+          445.8687741901561
+        ],
+        [
+          1904.2234332425069,
+          472.9700272479564
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1703.1372549019607,
+          957.6470588235295
+        ],
+        [
+          1919.0,
+          1078.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "ch07_20251104184021_20251112174322_000204.jpg",
+  "imageData": null,
+  "imageHeight": 1080,
+  "imageWidth": 1920,
+  "text": ""
+}

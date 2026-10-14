@@ -1,0 +1,44 @@
+{
+  "version": "0.4.43",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1200.612244897959,
+          393.0612244897959
+        ],
+        [
+          1228.9795918367347,
+          420.204081632653
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1572.0408163265306,
+          385.71428571428567
+        ],
+        [
+          1600.408163265306,
+          411.4285714285714
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "ch07_20251114141501_20251118171616_000061.jpg",
+  "imageData": null,
+  "imageHeight": 1080,
+  "imageWidth": 1920
+}

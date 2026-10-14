@@ -1,0 +1,112 @@
+{
+  "version": "0.4.43",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          880.0,
+          392.5
+        ],
+        [
+          902.5,
+          445.83333333333337
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          854.1666666666667,
+          417.5
+        ],
+        [
+          889.1666666666667,
+          500.83333333333337
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          885.8333333333334,
+          436.66666666666663
+        ],
+        [
+          915.0,
+          504.16666666666663
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1010.8333333333334,
+          366.66666666666663
+        ],
+        [
+          1023.3333333333335,
+          380.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1200.0,
+          387.5
+        ],
+        [
+          1231.6666666666667,
+          421.66666666666663
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1568.3333333333335,
+          384.16666666666663
+        ],
+        [
+          1605.8333333333335,
+          411.66666666666663
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "ch07_20251114141501_20251118171616_000818.jpg",
+  "imageData": null,
+  "imageHeight": 1080,
+  "imageWidth": 1920
+}

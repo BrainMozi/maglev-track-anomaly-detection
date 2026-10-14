@@ -1,0 +1,18 @@
+{
+  "model": "gradient_boosting",
+  "feature_names": [
+    "heat_peak",
+    "heat_mean",
+    "pix_peak",
+    "pix_mean",
+    "area",
+    "compactness",
+    "boundary_grad"
+  ],
+  "n_samples": 256,
+  "n_pos": 224,
+  "n_neg": 32,
+  "threshold": 0.5,
+  "source": "audited development_frame_index.csv",
+  "warning": "development-fitted; grouped OOF shows cross-segment negative generalization is limited"
+}

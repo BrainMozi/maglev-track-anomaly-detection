@@ -1,0 +1,7 @@
+data/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+data/**/*.jpeg filter=lfs diff=lfs merge=lfs -text
+data/**/*.png filter=lfs diff=lfs merge=lfs -text
+runtime/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+runtime/**/*.npz filter=lfs diff=lfs merge=lfs -text
+runtime/**/*.pt filter=lfs diff=lfs merge=lfs -text
+runtime/**/*.joblib filter=lfs diff=lfs merge=lfs -text

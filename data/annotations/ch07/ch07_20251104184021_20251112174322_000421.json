@@ -1,0 +1,214 @@
+{
+  "version": "0.4.43",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          1473.4559934668214,
+          497.2484219641576
+        ],
+        [
+          1487.6299376299376,
+          541.3513513513514
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          1435.8806765797835,
+          488.21052294459287
+        ],
+        [
+          1451.5302953038804,
+          536.2677098526156
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1530.9156052812764,
+          418.29880255719814
+        ],
+        [
+          1560.2910602910601,
+          454.5530145530145
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1220.5868894270957,
+          384.7641654342686
+        ],
+        [
+          1239.7089397089396,
+          406.11226611226607
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1492.526754224867,
+          387.61050270484236
+        ],
+        [
+          1515.072765072765,
+          371.08108108108104
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vehicle",
+      "text": "",
+      "points": [
+        [
+          1597.7358490566037,
+          348.1132075471698
+        ],
+        [
+          1582.8737850200116,
+          360.0200114351058
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          1893.6020583190395,
+          449.3010291595197
+        ],
+        [
+          1906.1020583190395,
+          471.8010291595197
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          1904.9621212121212,
+          446.4015151515152
+        ],
+        [
+          1918.2954545454547,
+          478.9015151515152
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          1814.63871013142,
+          454.94979189402034
+        ],
+        [
+          1826.3973321694273,
+          482.2335566551058
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          1409.3364161760387,
+          484.1560532362419
+        ],
+        [
+          1430.5613305613304,
+          535.7380457380458
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          1835.4469854469853,
+          454.13721413721413
+        ],
+        [
+          1847.4012474012472,
+          484.8024948024948
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          1823.4927234927234,
+          472.2245322245322
+        ],
+        [
+          1836.5904365904364,
+          508.08731808731807
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "ch07_20251104184021_20251112174322_000421.jpg",
+  "imageData": null,
+  "imageHeight": 1080,
+  "imageWidth": 1920
+}
