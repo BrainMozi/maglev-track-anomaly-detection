@@ -1,0 +1,31 @@
+#!/bin/bash
+#SBATCH --job-name=maglev_unified
+#SBATCH --partition=<GPU_PARTITION>
+#SBATCH --array=0-3
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=7
+#SBATCH --gres=gpu:1
+#SBATCH --mem=64G
+#SBATCH --time=0-08:00:00
+#SBATCH --output=logs/%x_%A_%a.out
+#SBATCH --error=logs/%x_%A_%a.err
+
+set -euo pipefail
+PROJECT_ROOT="${PROJECT_ROOT:?export PROJECT_ROOT}"
+PYTHON_BIN="${PYTHON_BIN:-python}"
+CONFIG_PATH="${CONFIG_PATH:?export CONFIG_PATH}"
+FRAME_DIR="${FRAME_DIR:?export FRAME_DIR}"
+OUTPUT_DIR="${OUTPUT_DIR:?export OUTPUT_DIR}"
+SHARD_COUNT="${SLURM_ARRAY_TASK_COUNT:-4}"
+SHARD_INDEX="${SLURM_ARRAY_TASK_ID}"
+
+cd "$PROJECT_ROOT"
+mkdir -p logs "$OUTPUT_DIR"
+"$PYTHON_BIN" scripts/process_frames.py \
+  --config "$CONFIG_PATH" \
+  --input "$FRAME_DIR" \
+  --out "$OUTPUT_DIR" \
+  --save-overlays alerts \
+  --shard-index "$SHARD_INDEX" \
+  --shard-count "$SHARD_COUNT"

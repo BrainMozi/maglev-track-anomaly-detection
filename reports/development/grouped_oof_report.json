@@ -1,0 +1,119 @@
+{
+  "scope": "region classifier leave-one-segment-out audit; front-end remains development-selected",
+  "feature_names": [
+    "heat_peak",
+    "heat_mean",
+    "pix_peak",
+    "pix_mean",
+    "area",
+    "compactness",
+    "boundary_grad"
+  ],
+  "segments": [
+    "ch07_20251104180001_20251112174239",
+    "ch07_20251104184021_20251112174322",
+    "ch07_20251114141501_20251118171616",
+    "ch07_20251114144033_20251118171804"
+  ],
+  "folds": [
+    {
+      "held_out_segment": "ch07_20251104180001_20251112174239",
+      "train_candidates": 253,
+      "test_candidates": 3,
+      "train_pos": 221,
+      "train_neg": 32,
+      "test_pos": 3,
+      "test_neg": 0,
+      "confusion_matrix_labels_0_1": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "held_out_segment": "ch07_20251104184021_20251112174322",
+      "train_candidates": 218,
+      "test_candidates": 38,
+      "train_pos": 188,
+      "train_neg": 30,
+      "test_pos": 36,
+      "test_neg": 2,
+      "confusion_matrix_labels_0_1": [
+        [
+          0,
+          2
+        ],
+        [
+          9,
+          27
+        ]
+      ]
+    },
+    {
+      "held_out_segment": "ch07_20251114141501_20251118171616",
+      "train_candidates": 167,
+      "test_candidates": 89,
+      "train_pos": 140,
+      "train_neg": 27,
+      "test_pos": 84,
+      "test_neg": 5,
+      "confusion_matrix_labels_0_1": [
+        [
+          2,
+          3
+        ],
+        [
+          6,
+          78
+        ]
+      ]
+    },
+    {
+      "held_out_segment": "ch07_20251114144033_20251118171804",
+      "train_candidates": 130,
+      "test_candidates": 126,
+      "train_pos": 123,
+      "train_neg": 7,
+      "test_pos": 101,
+      "test_neg": 25,
+      "confusion_matrix_labels_0_1": [
+        [
+          5,
+          20
+        ],
+        [
+          3,
+          98
+        ]
+      ]
+    }
+  ],
+  "overall": {
+    "candidates": 256,
+    "positives": 224,
+    "negatives": 32,
+    "confusion_matrix_labels_0_1": [
+      [
+        7,
+        25
+      ],
+      [
+        18,
+        206
+      ]
+    ],
+    "positive_precision": 0.8917748917748918,
+    "positive_recall": 0.9196428571428571,
+    "roc_auc": 0.7914341517857142,
+    "average_precision": 0.9465299163079618,
+    "development_abnormal_frame_hits_after_oof_classifier": 116,
+    "development_abnormal_frames": 124,
+    "normal_frames_with_oof_false_region": 4,
+    "normal_frames": 35
+  }
+}

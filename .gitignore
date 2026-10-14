@@ -1,0 +1,27 @@
+# Generated files and local environment
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+.env
+*.key
+*.pem
+configs/local*.json
+outputs/
+results/
+logs/
+cache/
+.cache/
+
+# Data and runtime assets are distributed through this repository's Releases.
+data/*
+!data/README.md
+runtime/
+目录与来源_请确认.md

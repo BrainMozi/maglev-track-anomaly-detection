@@ -1,0 +1,28 @@
+{
+  "roi": [640, 270, 1920, 1080],
+  "labeled_images": 117,
+  "instances": 760,
+  "background_images_with_empty_json": 1,
+  "class_counts": {"vehicle": 422, "person": 338},
+  "split_counts": {"train": 74, "val": 30, "test": 13},
+  "segment_counts": {
+    "ch07_20251104161952_20251112171033": 1,
+    "ch07_20251104180001_20251112174239": 26,
+    "ch07_20251104184021_20251112174322": 47,
+    "ch07_20251114141501_20251118171616": 30,
+    "ch07_20251114144033_20251118171804": 13
+  },
+  "size_counts_original_pixels": {
+    "tiny<32^2": 430,
+    "small<64^2": 241,
+    "medium<96^2": 52,
+    "large": 37
+  },
+  "exact_duplicate_groups": [],
+  "unlabeled_images_excluded": 165,
+  "notes": [
+    "Unlabeled images are excluded rather than treated as negatives.",
+    "Split is by source video to avoid adjacent-frame leakage.",
+    "The business class vehicle is exposed as car during training to reuse the COCO car head row."
+  ]
+}

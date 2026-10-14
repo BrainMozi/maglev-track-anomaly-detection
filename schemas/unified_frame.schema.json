@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/maglev/unified-frame-0.1.schema.json",
+  "title": "Unified single-frame inspection result",
+  "type": "object",
+  "required": ["schema_version", "filename", "status", "known_objects", "open_set", "combined", "registration"],
+  "properties": {
+    "schema_version": {"const": "ufp/0.1"},
+    "filename": {"type": ["string", "null"]},
+    "image_shape": {"type": "array", "items": {"type": "integer"}, "minItems": 2},
+    "status": {
+      "type": "object",
+      "required": ["frame", "failures"],
+      "properties": {
+        "frame": {"enum": ["ok", "partial", "failed"]},
+        "failures": {"type": "array"}
+      }
+    },
+    "registration": {
+      "type": "object",
+      "required": ["status", "valid"],
+      "properties": {
+        "status": {"type": "string"},
+        "valid": {"type": "boolean"}
+      }
+    },
+    "known_objects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["class_name", "confidence", "xyxy"],
+        "properties": {
+          "class_name": {"enum": ["person", "vehicle"]},
+          "confidence": {"type": "number"},
+          "xyxy": {"type": "array", "items": {"type": "number"}, "minItems": 4, "maxItems": 4},
+          "overlaps_open_set": {"type": "boolean"}
+        }
+      }
+    },
+    "open_set": {
+      "type": "object",
+      "required": ["summary", "regions"],
+      "properties": {
+        "summary": {"type": "object"},
+        "regions": {"type": "array"}
+      }
+    },
+    "combined": {
+      "type": "object",
+      "required": ["known_object_count", "open_set_region_count", "has_any_detection"],
+      "properties": {
+        "known_object_count": {"type": "integer", "minimum": 0},
+        "open_set_region_count": {"type": "integer", "minimum": 0},
+        "has_any_detection": {"type": "boolean"}
+      }
+    }
+  }
+}

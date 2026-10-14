@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>磁浮交通综合视频监控平台 · 嘉定试验线</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background:#f6f7f8; color:#23262b; font-size:13px; overflow:hidden;
+  }
+  button { font-family:inherit; cursor:pointer; border:none; background:none; }
+  input, select { font-family:inherit; }
+
+  .btn { padding:8px 18px; border-radius:8px; font-size:13px; }
+  .btn.primary { background:#07b158; color:#fff; }
+  .btn.primary:hover { background:#069a4e; }
+  .btn.plain { background:#fff; color:#23262b; border:1px solid #dcdee1; }
+  .btn.plain:hover { border-color:#c4c7cb; background:#fafbfb; }
+  .btn.danger { background:#fff; color:#e04338; border:1px solid #dcdee1; }
+  .btn.danger:hover { border-color:#e04338; }
+  .btn.link { color:#4f6e8e; padding:8px 10px; }
+  .btn.link:hover { opacity:.8; }
+
+  /* ===== 顶栏 ===== */
+  #topbar {
+    height:58px; display:flex; align-items:center; gap:22px; padding:0 22px;
+    background:#fff; border-bottom:1px solid #e7e9eb; position:relative; z-index:20;
+  }
+  .brand { display:flex; align-items:center; gap:11px; white-space:nowrap; }
+  .brand .logo-mark {
+    width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg,#0cbf63,#079a4e);
+    color:#fff; display:flex; align-items:center; justify-content:center; font-size:15px;
+    box-shadow:0 2px 6px rgba(7,177,88,.3); flex-shrink:0;
+  }
+  .brand .tt { display:flex; flex-direction:column; line-height:1.3; }
+  .brand b { font-size:15px; color:#23262b; letter-spacing:.3px; }
+  .brand small { color:#8b9096; font-size:11px; }
+  nav { display:flex; gap:4px; }
+  .nav-btn { color:#8b9096; padding:8px 15px; border-radius:8px; font-size:13.5px; }
+  .nav-btn:hover { color:#23262b; }
+  .nav-btn.active { color:#079e52; font-weight:600; background:#e4f5ea; }
+  .pill { background:#e04338; color:#fff; border-radius:9px; font-size:10px; padding:1px 6px; margin-left:4px; font-weight:normal; }
+  .tools { margin-left:auto; display:flex; align-items:center; gap:16px; }
+  .switch { display:flex; align-items:center; gap:7px; color:#8b9096; cursor:pointer; user-select:none; font-size:12.5px; }
+  .switch input { display:none; }
+  .switch .tk { width:34px; height:20px; border-radius:10px; background:#dfe1e4; position:relative; transition:background .2s; }
+  .switch .tk::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; transition:left .2s; box-shadow:0 1px 2px rgba(0,0,0,.15); }
+  .switch input:checked + .tk { background:#07b158; }
+  .switch input:checked + .tk::after { left:16px; }
+  #clock { color:#8b9096; font-variant-numeric:tabular-nums; font-size:12.5px; }
+
+  /* ===== 分区头 ===== */
+  .sec-head { display:flex; align-items:baseline; gap:10px; }
+  .kicker { font-family:Consolas, monospace; font-size:9.5px; letter-spacing:2px; color:#b4b8bd; font-weight:700; align-self:center; }
+  .sec-head b { font-size:14.5px; color:#23262b; }
+  .sec-head .sub { color:#8b9096; font-size:11.5px; }
+  .sec-head .right { margin-left:auto; display:flex; align-items:center; gap:14px; color:#8b9096; font-size:11.5px; }
+  .sec-head .right i { font-style:normal; display:flex; align-items:center; gap:5px; }
+  .sec-head .right .lg-line { display:inline-block; width:18px; height:3px; border-radius:2px; background:#4f7db3; }
+  .sec-head .right .lg-dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:#e64a3c; border:1.5px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.08); }
+  .chip-stat { background:#eef0f2; border-radius:999px; padding:3px 11px; color:#71767c; }
+  .chip-stat b { color:#23262b; font-weight:600; }
+  .chip-stat.warn { background:#fdecea; color:#c9382e; } .chip-stat.warn b { color:#c9382e; }
+
+  /* ===== 态势页 ===== */
+  .view { height:calc(100vh - 58px); }
+  #view-monitor { position:relative; display:flex; flex-direction:column; gap:12px; overflow:hidden;
+    padding:16px 20px 16px; background:linear-gradient(180deg,#fbfcfd 0%,#f4f5f7 100%); }
+  .map-sec { flex:1; display:flex; flex-direction:column; gap:10px; min-height:0; }
+  .map-card {
+    flex:1; position:relative; min-height:0; background:#fff;
+    border:1px solid #e7e9eb; border-radius:14px; overflow:hidden;
+    box-shadow:0 1px 3px rgba(35,40,46,.04), 0 8px 28px rgba(35,40,46,.05);
+  }
+  .stage-inner { position:absolute; inset:0; }
+  .map-box {
+    position:absolute; transform-origin:0 0;
+    transition: transform .8s cubic-bezier(.25,.7,.3,1), left .45s ease, top .45s ease, width .45s ease, height .45s ease;
+    will-change:transform;
+  }
+  .map-box img { width:100%; height:100%; display:block; filter:saturate(1.08) contrast(1.03); }
+  #trackSvg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  #btnReset {
+    position:absolute; right:14px; bottom:14px; z-index:6; display:none;
+    background:rgba(255,255,255,.94); border:1px solid #e7e9eb; border-radius:999px;
+    padding:7px 15px; font-size:12px; color:#4f6e8e; font-weight:600;
+    box-shadow:0 3px 14px rgba(35,40,46,.12);
+  }
+  #btnReset:hover { color:#079e52; border-color:#bfe3cf; }
+
+  /* 节点标记 */
+  .mark { position:absolute; width:0; height:0; cursor:pointer; z-index:5; }
+  .mark .dot { position:absolute; left:-5.5px; top:-5.5px; width:10px; height:10px; border-radius:50%;
+    background:#e64a3c; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.3); transition:background .2s; }
+  .mark .pill {
+    position:absolute; left:5px; bottom:2px; background:#e64a3c; color:#fff; font-size:10px; font-weight:600;
+    padding:1.5px 8px; border-radius:999px; white-space:nowrap; letter-spacing:.5px; box-shadow:0 1px 4px rgba(230,74,60,.35);
+  }
+  .mark .pill.br { bottom:auto; top:2px; }
+  .mark .pill.pl { left:auto; right:5px; }
+  .mark:hover .pill { background:#c9382e; }
+  .mark.alarm { z-index:9; }
+  .mark.alarm .dot { background:#e64a3c; animation:pulse 1s infinite; }
+  .mark.alarm .pill { animation:blinkPill 1s infinite; }
+  .mark.active-ledger .dot { background:#e8973b; animation:pulseOrange 1.6s infinite; }
+  .mark.active-ledger .pill { background:#e8973b; box-shadow:0 1px 4px rgba(232,151,59,.4); }
+  @keyframes pulse {
+    0% { box-shadow:0 0 0 0 rgba(230,74,60,.55); }
+    70% { box-shadow:0 0 0 12px rgba(230,74,60,0); }
+    100% { box-shadow:0 0 0 0 rgba(230,74,60,0); }
+  }
+  @keyframes pulseOrange {
+    0% { box-shadow:0 0 0 0 rgba(232,151,59,.5); }
+    70% { box-shadow:0 0 0 9px rgba(232,151,59,0); }
+    100% { box-shadow:0 0 0 0 rgba(232,151,59,0); }
+  }
+  @keyframes blinkPill { 50% { opacity:.55; } }
+
+  /* 视频墙 */
+  .tile-sec { flex-shrink:0; display:flex; flex-direction:column; gap:10px; }
+  .tile-wall { display:grid; grid-template-columns:repeat(6,1fr); gap:12px; }
+  .vtile {
+    background:#181b1f; border-radius:12px; overflow:hidden; cursor:pointer; position:relative;
+    box-shadow:0 1px 3px rgba(35,40,46,.08); transition:transform .15s, box-shadow .15s;
+    display:flex; flex-direction:column; border:1px solid #dfdee2;
+  }
+  .vtile:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(35,40,46,.16); }
+  .vtile canvas { width:100%; aspect-ratio:16/9; display:block; }
+  .vtile .vlab { display:flex; align-items:center; gap:6px; padding:7px 11px; font-size:11.5px; color:#43464b; background:#fff; }
+  .vtile .vlab i { width:7px; height:7px; border-radius:50%; background:#07b158; font-style:normal; flex-shrink:0; }
+  .vtile .vlab i.alarm { background:#e64a3c; animation:pulse 1s infinite; }
+  .vtile .vlab i.active-ledger { background:#e8973b; }
+  .vtile .vlab .vc { margin-left:auto; color:#989ba1; font-variant-numeric:tabular-nums; font-size:10.5px; }
+  .vtile.alarm { border-color:#e64a3c; box-shadow:0 0 0 1px #e64a3c, 0 6px 20px rgba(230,74,60,.22); }
+  .vtile.active-ledger { border-color:#e8973b; box-shadow:0 0 0 1px #e8973b, 0 6px 20px rgba(232,151,59,.2); }
+
+  /* ===== 抽屉面板 ===== */
+  .drawer {
+    position:absolute; top:14px; bottom:14px; z-index:10;
+    background:#fff; border-radius:14px; border:1px solid #e7e9eb;
+    box-shadow:0 14px 48px rgba(40,44,50,.16);
+    display:flex; flex-direction:column; overflow:hidden;
+    transition:transform .5s cubic-bezier(.3,.7,.3,1), opacity .4s;
+  }
+  .drawer.left { left:20px; width:298px; }
+  .drawer.right { right:20px; width:324px; }
+  body:not(.has-alarms) .drawer.left { transform:translateX(-115%); opacity:0; pointer-events:none; }
+  .drawer.right:not(.open) { transform:translateX(115%); opacity:0; pointer-events:none; }
+  .drawer-head {
+    padding:14px 16px 10px; display:flex; align-items:center; gap:8px;
+    font-weight:600; color:#23262b; font-size:14px;
+  }
+  .drawer-head .cnt { margin-left:auto; color:#989ba1; font-weight:normal; font-size:11.5px; text-align:right; }
+  .drawer-head .close { color:#989ba1; font-size:15px; padding:2px 7px; border-radius:6px; }
+  .drawer-head .close:hover { color:#23262b; background:#f1f2f4; }
+  .seg { display:flex; gap:6px; padding:0 14px 10px; flex-wrap:wrap; }
+  .seg button { background:#f1f2f4; color:#8b9096; border-radius:6px; padding:4px 11px; font-size:12px; }
+  .seg button.active { background:#e4f5ea; color:#079e52; font-weight:600; }
+
+  /* 告警列表 */
+  .alarm-list { flex:1; overflow-y:auto; padding:2px 12px 12px; display:flex; flex-direction:column; gap:8px; }
+  .alarm-list::-webkit-scrollbar, .ledger-scroll::-webkit-scrollbar, .detail-body::-webkit-scrollbar { width:5px; }
+  .alarm-list::-webkit-scrollbar-thumb, .ledger-scroll::-webkit-scrollbar-thumb, .detail-body::-webkit-scrollbar-thumb { background:#d9dce0; border-radius:3px; }
+  .card { background:#f6f7f8; border-radius:10px; padding:10px 12px; cursor:pointer; transition:background .15s; }
+  .card:hover { background:#efF0f2; }
+  .card.sel { background:#e4f5ea; }
+  .card.new { animation:flashIn 1.2s ease; }
+  @keyframes flashIn { 0%{background:#fdecea;} 100%{background:#f6f7f8;} }
+  .card .row1 { display:flex; align-items:center; gap:7px; margin-bottom:5px; }
+  .badge { font-size:11px; padding:2px 8px; border-radius:5px; font-weight:500; }
+  .dur { color:#d98a2b; font-size:11px; font-variant-numeric:tabular-nums; }
+  .st { margin-left:auto; font-size:11px; color:#989ba1; }
+  .card .row2, .card .row3 { color:#8b9096; font-size:11.5px; margin-top:3px; }
+  .card .row2 b { color:#23262b; font-weight:500; }
+  .st.st-alarm { color:#e04338; } .st.st-ledger { color:#c79b1d; } .st.st-done { color:#079e52; } .st.st-false { color:#989ba1; }
+  .empty { color:#b4b7bc; text-align:center; padding:40px 16px; line-height:2; }
+
+  /* 详情 */
+  .detail-body { flex:1; overflow-y:auto; padding:2px 16px 16px; }
+  .kv { display:flex; margin-bottom:9px; font-size:12.5px; }
+  .kv .k { width:74px; color:#989ba1; flex-shrink:0; }
+  .kv .v { color:#23262b; word-break:break-all; }
+  .snap-box { border-radius:10px; overflow:hidden; margin:8px 0 12px; background:#f1f2f4; }
+  .snap-box img { width:100%; display:block; }
+  .snap-box .cap { padding:6px 10px; font-size:11px; color:#989ba1; }
+  .actions { display:flex; gap:8px; margin:10px 0 4px; flex-wrap:wrap; }
+  .actions .btn { flex:1; padding:9px 10px; white-space:nowrap; }
+  .tl-title { margin:16px 0 10px; color:#23262b; font-weight:600; font-size:12.5px; }
+  .tl { border-left:2px solid #e7e9eb; margin-left:6px; padding-left:14px; display:flex; flex-direction:column; gap:12px; }
+  .tl-item { position:relative; font-size:12px; color:#3c4046; line-height:1.5; }
+  .tl-item::before { content:''; position:absolute; left:-19px; top:4px; width:8px; height:8px; border-radius:50%; background:#07b158; }
+  .tl-item .t { color:#989ba1; font-size:11px; margin-top:2px; }
+  .tl-item .who { color:#4f6e8e; font-size:11px; margin-left:6px; }
+
+  /* ===== 台账 ===== */
+  #view-ledger { display:none; flex-direction:column; padding:14px 20px; gap:12px; overflow:hidden; }
+  .stats { display:grid; grid-template-columns:repeat(6,1fr); gap:12px; }
+  .stat { background:#fff; border:1px solid #e7e9eb; border-radius:12px; padding:16px 18px; }
+  .stat .num { font-size:26px; font-weight:700; color:#23262b; font-variant-numeric:tabular-nums; }
+  .stat .lbl { color:#989ba1; font-size:12px; margin-top:4px; }
+  .stat.hot .num { color:#e04338; } .stat.mid .num { color:#c79b1d; } .stat.ok .num { color:#079e52; } .stat.cy .num { color:#4f6e8e; }
+  .ledger-box { flex:1; background:#fff; border:1px solid #e7e9eb; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; }
+  .ledger-head { padding:14px 18px; font-weight:600; color:#23262b; display:flex; align-items:center; gap:12px; font-size:14px; }
+  .ledger-head .seg { padding:0; margin-left:auto; }
+  .ledger-scroll { flex:1; overflow:auto; }
+  table.ledger { width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.ledger th {
+    position:sticky; top:0; background:#f5f6f8; color:#8b9096; text-align:left;
+    padding:10px 16px; font-weight:normal; white-space:nowrap; z-index:2;
+  }
+  table.ledger td { padding:11px 16px; border-top:1px solid #eef0f2; color:#3c4046; white-space:nowrap; }
+  table.ledger tr:hover td { background:#fafbfc; }
+  .stat-pill { padding:2px 10px; border-radius:10px; font-size:11px; }
+  .sp-pending { background:#faf3dc; color:#a8851a; } .sp-doing { background:#e9eff5; color:#4f6e8e; }
+  .sp-done { background:#e4f5ea; color:#079e52; } .sp-false { background:#f1f2f4; color:#989ba1; }
+  .op { color:#4f6e8e; font-size:12px; margin-right:10px; }
+  .op:hover { opacity:.8; }
+  .op.adv { color:#d98a2b; }
+
+  /* ===== 现场监控播放器（实时 / 回看） ===== */
+  #playerModal {
+    display:none; position:fixed; inset:0; z-index:100; background:rgba(24,26,30,.5);
+    align-items:center; justify-content:center;
+  }
+  #playerModal.open { display:flex; }
+  .player { width:min(1080px,94vw); max-height:94vh; overflow:auto; background:#fff; border-radius:14px; }
+  .player-head { display:flex; align-items:center; gap:12px; padding:14px 18px; }
+  .player-head b { color:#23262b; font-size:15px; }
+  .player-head .sub { color:#989ba1; font-size:12px; }
+  .mode-seg { margin-left:auto; display:flex; background:#f1f2f4; border-radius:8px; padding:3px; gap:2px; }
+  .mode-seg button { padding:5px 18px; border-radius:6px; font-size:12.5px; color:#8b9096; }
+  .mode-seg button.active { background:#fff; color:#079e52; font-weight:600; box-shadow:0 1px 4px rgba(0,0,0,.08); }
+  .player-head .close { margin-left:4px; color:#989ba1; font-size:17px; padding:2px 6px; border-radius:6px; }
+  .player-head .close:hover { color:#23262b; background:#f1f2f4; }
+  #feed { width:100%; display:block; background:#101418; border-radius:8px; }
+  .pb-bar { display:flex; align-items:center; gap:10px; padding:10px 4px 4px; flex-wrap:wrap; font-size:12px; color:#8b9096; }
+  .pb-bar label { display:flex; align-items:center; gap:5px; }
+  .pb-bar input[type=date], .pb-bar input[type=time], .pb-bar select {
+    border:1px solid #dcdee1; border-radius:6px; padding:4px 7px; font-size:12px; color:#23262b; background:#fff;
+  }
+  .pb-bar input[type=range] { flex:1; min-width:140px; accent-color:#07b158; height:20px; }
+  .pb-clock { color:#23262b; font-variant-numeric:tabular-nums; font-weight:600; min-width:132px; text-align:right; }
+  .player-foot { display:flex; align-items:center; gap:10px; padding:10px 4px 14px; }
+  .player-foot .note { color:#989ba1; font-size:11.5px; margin-right:auto; }
+
+  /* toast */
+  #toast {
+    position:fixed; top:72px; left:50%; transform:translateX(-50%); z-index:200;
+    background:rgba(30,32,36,.82); color:#fff; padding:9px 22px; border-radius:8px;
+    font-size:13px; display:none; backdrop-filter:blur(4px);
+  }
+</style>
+</head>
+<body>
+
+<header id="topbar">
+  <div class="brand">
+    <span class="logo-mark">◉</span>
+    <span class="tt"><b>磁浮交通综合视频监控平台</b><small>同济大学嘉定校区 · 保护区入侵 / 轨面异物检测（演示数据）</small></span>
+  </div>
+  <nav>
+    <button class="nav-btn active" data-view="monitor">态势监控</button>
+    <button class="nav-btn" data-view="ledger">事件台账<span id="ledgerPill" class="pill">0</span></button>
+  </nav>
+  <div class="tools">
+    <label class="switch"><input type="checkbox" id="autoSim"><span class="tk"></span>自动模拟告警</label>
+    <button id="btnSimAlarm" class="btn primary">模拟一次告警</button>
+    <span id="clock">--:--:--</span>
+  </div>
+</header>
+
+<!-- ============ 态势监控：线路态势 + 视频墙 ============ -->
+<main id="view-monitor" class="view">
+  <section class="map-sec">
+    <div class="sec-head">
+      <span class="kicker">OVERVIEW</span>
+      <b>线路态势</b><span class="sub">磁悬浮试验线 · 嘉定校区段</span>
+      <div class="right">
+        <span class="chip-stat">今日 <b id="stToday">0</b></span>
+        <span class="chip-stat warn">未确认 <b id="stAlarm">0</b></span>
+        <span class="chip-stat">处理中 <b id="stDoing">0</b></span>
+        <i><span class="lg-line"></span>磁悬浮线路</i>
+        <i><span class="lg-dot"></span>站点节点</i>
+        <i>点击节点查看现场监控</i>
+      </div>
+    </div>
+    <div class="map-card" id="mapArea">
+      <div class="stage-inner" id="stageInner">
+        <div class="map-box" id="mapBox">
+          <img src="assets/map.jpg?v=6" alt="磁悬浮试验线走廊图" id="mapImg">
+          <svg id="trackSvg" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polyline id="trackCase" fill="none" stroke="#dbe7f2" stroke-width="9"
+              stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.9" points=""/>
+            <polyline id="trackLine" fill="none" stroke="#4f7db3" stroke-width="4.5"
+              stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.95" points=""/>
+          </svg>
+        </div>
+      </div>
+      <button id="btnReset">复位视图</button>
+    </div>
+  </section>
+
+  <section class="tile-sec">
+    <div class="sec-head">
+      <span class="kicker">CAMERAS</span>
+      <b>实时画面</b><span class="sub" id="tileSub">6 路在线 · 模拟流</span>
+      <div class="right"><i>点击画面进入现场监控，可切换回看</i></div>
+    </div>
+    <div class="tile-wall" id="tileWall"></div>
+  </section>
+
+  <!-- 实时告警抽屉：有事件才滑入 -->
+  <aside class="drawer left" id="alarmDrawer">
+    <div class="drawer-head">实时告警 <span class="cnt" id="alarmCnt"></span></div>
+    <div class="seg" id="alarmFilter">
+      <button data-f="all" class="active">全部</button>
+      <button data-f="alarm">未确认</button>
+      <button data-f="ledger">已确认</button>
+      <button data-f="false">误报</button>
+    </div>
+    <div id="alarmList" class="alarm-list"></div>
+  </aside>
+
+  <!-- 事件详情抽屉：选中事件才滑入 -->
+  <aside class="drawer right" id="detailDrawer">
+    <div class="drawer-head">事件详情 <span class="cnt" id="detailId"></span>
+      <button class="close" id="detailClose">✕</button>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+  </aside>
+</main>
+
+<!-- ============ 事件台账 ============ -->
+<main id="view-ledger" class="view">
+  <div class="stats" id="stats"></div>
+  <div class="ledger-box">
+    <div class="ledger-head">
+      事件台账（确认后的事件 · 全程留痕）
+      <div class="seg" id="ledgerFilter">
+        <button data-f="all" class="active">全部</button>
+        <button data-f="待处理">待处理</button>
+        <button data-f="处置中">处置中</button>
+        <button data-f="已结束">已结束</button>
+        <button data-f="误报">误报</button>
+      </div>
+    </div>
+    <div class="ledger-scroll">
+      <table class="ledger">
+        <thead><tr>
+          <th>事件编号</th><th>类型</th><th>点位 / 区间</th><th>触发时间</th>
+          <th>确认时间</th><th>确认人</th><th>当前状态</th><th>最近处置动态</th><th>操作</th>
+        </tr></thead>
+        <tbody id="ledgerBody"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- ============ 现场监控（实时 / 回看） ============ -->
+<div id="playerModal">
+  <div class="player">
+    <div class="player-head">
+      <b id="plTitle">摄像头</b>
+      <span class="sub" id="plSub"></span>
+      <div class="mode-seg">
+        <button id="modeLive" class="active">实时</button>
+        <button id="modeReview">回看</button>
+      </div>
+      <button class="close" id="plClose">✕</button>
+    </div>
+    <div style="padding:0 18px;">
+      <canvas id="feed" width="960" height="540"></canvas>
+      <div class="pb-bar" id="pbBar" style="display:none">
+        <label>日期 <input type="date" id="pbDate"></label>
+        <label>开始 <input type="time" id="pbStart"></label>
+        <label>结束 <input type="time" id="pbEnd"></label>
+        <label>倍速
+          <select id="pbSpeed">
+            <option value="1">1×</option><option value="10">10×</option>
+            <option value="60" selected>60×</option><option value="300">300×</option>
+          </select>
+        </label>
+        <input type="range" id="pbRange" min="0" max="1000" value="0">
+        <span class="pb-clock" id="pbClock">--:--:--</span>
+      </div>
+      <div class="player-foot">
+        <span class="note">演示说明：未接入实时监控，「实时」与「回看」画面均以过往录像模拟；检测框仅在回看分析画面中叠加</span>
+        <button class="btn link" id="pbJump" style="display:none">回到事发时刻</button>
+        <button class="btn danger" id="plFalse">误报</button>
+        <button class="btn primary" id="plConfirm">确认告警</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ================= 基础数据 ================= */
+// 摄像头点位来自《同济大学-嘉定校区摄像头地图.pdf》实际标注（共 6 处，坐标按线路走廊裁剪图换算）；
+// 线路走向按PDF中磁悬浮试验线实测描点：西侧爬坡段（ch02→ch04→ch03）经 ch07 转向，沿北侧道路经 ch06 至 ch01。
+const CAMS = [
+  { id:'ch01', name:'摄像头-01', zone:'东段 · 嘉定同济体育中心东侧', x:93.53, y:31.78, lbl:'pl' },
+  { id:'ch02', name:'摄像头-02', zone:'西段 · 线路起点（西南角）', x:14.19, y:61.17, lbl:'br' },
+  { id:'ch03', name:'摄像头-03', zone:'西段 · 防灾工程馆北侧', x:17.46, y:49.22 },
+  { id:'ch04', name:'摄像头-04', zone:'西段 · 防灾工程馆东侧', x:17.48, y:53.21, lbl:'br' },
+  { id:'ch06', name:'摄像头-06', zone:'北段 · 昌吉东路侧', x:64.85, y:13.60 },
+  { id:'ch07', name:'摄像头-07', zone:'北段 · 轨道交通综合试验中心西侧', x:31.64, y:19.87 },
+];
+// 磁悬浮线路走向（按底图描点）
+const TRACK_PTS = [
+  [1.5,83],[14.19,61.17],[15.9,56.8],[17.48,53.21],[17.46,49.22],[22,38],[26.5,28],[31.64,19.87],
+  [45,16.5],[64.85,13.6],[78,20],[87,25],[93.53,31.78],[99.5,33.5],
+];
+const RATIO = 2400/743;
+
+const TYPES = {
+  person:  { label:'人员入侵', cls:'person',  color:'#e04338', badgeBg:'#fdecea', badgeFg:'#c9382e', source:'任务一 · 保护区入侵检测', big:1 },
+  vehicle: { label:'施工车辆', cls:'truck',   color:'#d98a2b', badgeBg:'#fbf1e0', badgeFg:'#b26f18', source:'任务一 · 保护区入侵检测', big:1 },
+  inspect: { label:'轨检车',   cls:'trolley', color:'#c79b1d', badgeBg:'#faf3dc', badgeFg:'#a8851a', source:'任务一 · 保护区入侵检测', big:1 },
+  metal:   { label:'金属异物', cls:'metal',   color:'#8a63d2', badgeBg:'#efe9fb', badgeFg:'#6f4fc0', source:'任务二 · 轨面异物检测', big:0 },
+  magnetic:{ label:'磁性异物', cls:'magnetic',color:'#8a63d2', badgeBg:'#efe9fb', badgeFg:'#6f4fc0', source:'任务二 · 轨面异物检测', big:0 },
+};
+// 图像关注区（保护区）：单路画面中的归一化矩形 [x, y, w, h]
+const ROI = [0.34, 0.46, 0.44, 0.34];
+
+/* ================= 状态 ================= */
+let events = [];
+let seq = 0;
+let selId = null;
+let alarmFilter = 'all';
+let ledgerFilter = 'all';
+let playerCtx = null;
+let autoTimer = null;
+const OPERATORS = ['值班员 · 王强', '值班员 · 李敏', '巡检员 · 张伟'];
+const zoom = { k:1, fx:.5, fy:.5 };
+let baseW = 0, baseH = 0;
+
+const $ = s => document.querySelector(s);
+const camOf = id => CAMS.find(c => c.id === id);
+const pad = n => String(n).padStart(2,'0');
+const fmtT = d => pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+const fmtDT = d => pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+fmtT(d);
+const fmtDay = d => d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());
+const dayStr = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const dur = ms => { const s=Math.max(0,ms/1000|0); return pad(s/60|0)+':'+pad(s%60); };
+
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._h); t._h = setTimeout(()=> t.style.display='none', 2200);
+}
+function evStatus(e){
+  if (e.status === 'alarm') return 'alarm';
+  if (e.status === 'false') return 'false';
+  if (e.ledgerStatus === '已结束') return 'done';
+  return 'ledger';
+}
+const hasActive = () => events.some(e => evStatus(e)==='alarm' || evStatus(e)==='ledger');
+
+/* ================= 地图适配与缩放 ================= */
+function fit(){
+  const inner = $('#stageInner');
+  const W = inner.clientWidth, H = inner.clientHeight;
+  if (W < 60 || H < 60) return;
+  baseW = Math.min(W - 24, (H - 24) * RATIO);
+  baseH = baseW / RATIO;
+  const box = $('#mapBox');
+  box.style.width = baseW + 'px';
+  box.style.height = baseH + 'px';
+  box.style.left = ((W - baseW) / 2) + 'px';
+  box.style.top = ((H - baseH) / 2) + 'px';
+  applyZoom();
+}
+function applyZoom(){
+  const inner = $('#stageInner');
+  const W = inner.clientWidth, H = inner.clientHeight;
+  const lw = document.body.classList.contains('has-alarms') ? 318 : 0;
+  const rw = $('#detailDrawer').classList.contains('open') ? 344 : 0;
+  const cx = lw + (W - lw - rw) / 2, cy = H / 2;
+  const left = (W - baseW) / 2, top = (H - baseH) / 2;
+  const tx = cx - left - baseW * zoom.fx * zoom.k;
+  const ty = cy - top  - baseH * zoom.fy * zoom.k;
+  $('#mapBox').style.transform = `translate(${tx}px, ${ty}px) scale(${zoom.k})`;
+  $('#btnReset').style.display = zoom.k > 1.02 ? '' : 'none';
+}
+function zoomTo(cam, k){
+  zoom.k = k || 2.2;
+  zoom.fx = cam.x / 100; zoom.fy = cam.y / 100;
+  applyZoom();
+}
+function zoomToFit(nodes){
+  const xs = nodes.map(n=>n.x), ys = nodes.map(n=>n.y);
+  const minx = Math.min(...xs)-7, maxx = Math.max(...xs)+7;
+  const miny = Math.min(...ys)-11, maxy = Math.max(...ys)+11;
+  const inner = $('#stageInner');
+  const W = inner.clientWidth, H = inner.clientHeight;
+  const lw = document.body.classList.contains('has-alarms') ? 318 : 0;
+  const rw = $('#detailDrawer').classList.contains('open') ? 344 : 0;
+  const usableW = Math.max(120, W - lw - rw - 48), usableH = Math.max(120, H - 48);
+  const kx = usableW / ((maxx-minx)/100 * baseW);
+  const ky = usableH / ((maxy-miny)/100 * baseH);
+  zoom.k = Math.max(1, Math.min(3, Math.min(kx, ky)));
+  zoom.fx = (minx+maxx)/200; zoom.fy = (miny+maxy)/200;
+  applyZoom();
+}
+function resetView(){
+  zoom.k = 1; zoom.fx = .5; zoom.fy = .5;
+  applyZoom();
+}
+function activeAlarmCams(){
+  const ids = [...new Set(events.filter(e=>evStatus(e)==='alarm').map(e=>e.camId))];
+  return ids.map(camOf);
+}
+
+/* ================= 场景绘制（插画质感监控画面） ================= */
+function drawScene(ctx, W, H, opt){
+  const t = opt.t || 0;
+  const mini = !!opt.mini;
+  const seed = opt.seed || 0;
+  if (opt.frame && opt.frame !== 1){
+    ctx.save();
+    ctx.translate(W/2, H*0.60);
+    ctx.scale(opt.frame, opt.frame);
+    ctx.translate(-W/2, -H*0.60);
+  }
+
+  // ---- 天空 ----
+  let g = ctx.createLinearGradient(0, 0, 0, H*0.62);
+  g.addColorStop(0, '#a9c8e6'); g.addColorStop(0.55, '#d7e6f2'); g.addColorStop(1, '#f0f6fa');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H*0.62);
+  // 太阳光晕
+  const sunX = W*0.80, sunY = H*0.13;
+  const sg = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, H*0.42);
+  sg.addColorStop(0, 'rgba(255,246,218,.8)'); sg.addColorStop(1, 'rgba(255,246,218,0)');
+  ctx.fillStyle = sg; ctx.fillRect(0, 0, W, H*0.62);
+  // 云（缓慢漂移）
+  ctx.fillStyle = 'rgba(255,255,255,.85)';
+  for (let i=0;i<4;i++){
+    const cx2 = ((i*0.27 + seed*0.11 + t*0.008) % 1.25 - 0.12)*W;
+    const cy2 = H*(0.09 + ((i*29)%17)/110);
+    const s = H*(0.026 + ((i*13)%10)/240);
+    ctx.beginPath();
+    ctx.arc(cx2, cy2, s*1.15, 0, 7); ctx.arc(cx2+s*1.2, cy2+s*0.25, s*0.85, 0, 7); ctx.arc(cx2-s*1.15, cy2+s*0.3, s*0.75, 0, 7);
+    ctx.fill();
+  }
+  // ---- 远景城市剪影（两层） ----
+  ctx.fillStyle = 'rgba(176,197,218,.8)';
+  const L1 = [[0,.33,.09,.20],[.08,.28,.07,.25],[.16,.36,.11,.17],[.28,.30,.08,.23],[.37,.35,.12,.18],[.50,.27,.09,.26],[.60,.33,.10,.20],[.71,.28,.08,.25],[.80,.34,.11,.19],[.92,.29,.08,.24]];
+  L1.forEach(([x,y,w,h]) => { const px=((x+seed*0.05)%1.1-0.05)*W; ctx.fillRect(px, y*H, w*W, h*H); });
+  const L2 = [[.03,.41,.07,.15],[.12,.39,.08,.17],[.22,.43,.09,.13],[.33,.40,.08,.16],[.45,.42,.10,.14],[.56,.39,.08,.17],[.66,.42,.09,.14],[.77,.40,.08,.16],[.88,.43,.09,.13]];
+  ctx.fillStyle = '#9fb4c9';
+  L2.forEach(([x,y,w,h]) => { const px=((x+seed*0.08)%1.15-0.07)*W; ctx.fillRect(px, y*H, w*W, h*H); });
+  // 亮窗
+  ctx.fillStyle = 'rgba(255,255,255,.4)';
+  L2.forEach(([x,y,w,h], bi) => {
+    const px=((x+seed*0.08)%1.15-0.07)*W;
+    for (let wy=y*H+6; wy<(y+h)*H-6; wy+=9)
+      for (let wx=px+5; wx<px+w*W-5; wx+=9)
+        if (((wx*13+wy*7+bi*5)%11) < 4) ctx.fillRect(wx, wy, 3.5, 4.5);
+  });
+  // ---- 绿化带 ----
+  g = ctx.createLinearGradient(0, H*0.5, 0, H*0.62);
+  g.addColorStop(0, '#b7cca1'); g.addColorStop(1, '#8fa874');
+  ctx.fillStyle = g; ctx.fillRect(0, H*0.5, W, H*0.12);
+  for (let i=0;i<10;i++){
+    const x = ((i*0.105+0.03 + seed*0.043)%1.12-0.06)*W, y = H*(0.482+((i*31)%12)/240), r = H*0.032;
+    ctx.fillStyle = '#7fa06b'; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.beginPath(); ctx.arc(x-r*0.3, y-r*0.35, r*0.55, 0, 7); ctx.fill();
+  }
+  // ---- 轨道梁 ----
+  const beamTop = H*0.58, beamBot = H*0.80;
+  g = ctx.createLinearGradient(0, beamBot, 0, beamBot+H*0.045);
+  g.addColorStop(0, '#6a737f'); g.addColorStop(1, '#525b67');
+  ctx.fillStyle = g; ctx.fillRect(0, beamBot, W, H*0.045);
+  g = ctx.createLinearGradient(0, beamTop, 0, beamBot);
+  g.addColorStop(0, '#dadfe6'); g.addColorStop(0.5, '#c5ccd5'); g.addColorStop(1, '#cfd5dc');
+  ctx.fillStyle = g; ctx.fillRect(0, beamTop, W, beamBot-beamTop);
+  ctx.fillStyle = 'rgba(255,255,255,.65)'; ctx.fillRect(0, beamTop, W, 2);
+  ctx.fillStyle = '#8b95a3';
+  ctx.fillRect(0, beamTop+(beamBot-beamTop)*0.26, W, H*0.016);
+  ctx.fillRect(0, beamTop+(beamBot-beamTop)*0.60, W, H*0.016);
+  ctx.fillStyle = 'rgba(255,255,255,.55)';
+  ctx.fillRect(0, beamTop+(beamBot-beamTop)*0.26, W, 1.5);
+  ctx.fillRect(0, beamTop+(beamBot-beamTop)*0.60, W, 1.5);
+  ctx.strokeStyle = 'rgba(90,100,112,.5)'; ctx.lineWidth = 1;
+  for (let x=((t*20+seed*13)%46); x<W; x+=46){ ctx.beginPath(); ctx.moveTo(x, beamTop+5); ctx.lineTo(x-9, beamBot-5); ctx.stroke(); }
+  ctx.fillStyle = '#f0cf4e'; ctx.fillRect(0, beamBot-3, W, 3);
+
+  // ---- 关注区 ----
+  const rx = ROI[0]*W, ry = ROI[1]*H, rw = ROI[2]*W, rh = ROI[3]*H;
+  ctx.fillStyle = 'rgba(250,219,20,0.07)'; ctx.fillRect(rx,ry,rw,rh);
+  ctx.setLineDash([7,5]); ctx.strokeStyle = '#fadb14'; ctx.lineWidth = 2;
+  ctx.strokeRect(rx,ry,rw,rh); ctx.setLineDash([]);
+  if (!mini){
+    ctx.font = '12px Microsoft YaHei';
+    const rl = '图像关注区（保护区）';
+    ctx.fillStyle = 'rgba(0,0,0,.45)'; const rw2 = ctx.measureText(rl).width+10;
+    ctx.fillRect(rx+4, ry+4, rw2, 18);
+    ctx.fillStyle = '#fadb14'; ctx.fillText(rl, rx+9, ry+17);
+  }
+
+  // ---- 目标与检测框 ----
+  let box = null;
+  if (opt.type && opt.hasBox){
+    const T = TYPES[opt.type];
+    const inRoiX = rx + rw*0.5;
+    if (T.big){
+      const cycle = 16, p = ((t + seed*2.3) % cycle) / cycle;
+      let cx2;
+      if (p < 0.30) cx2 = (p/0.30) * inRoiX;
+      else if (p < 0.62) cx2 = inRoiX + Math.sin((p-0.30)*20)*4;
+      else cx2 = inRoiX + ((p-0.62)/0.38) * (W - inRoiX);
+      const baseY = beamBot + 2;
+      if (opt.type === 'person'){
+        const ph = t*9;
+        ctx.strokeStyle = '#22304a'; ctx.lineWidth = 7; ctx.lineCap = 'round';
+        const sw = Math.sin(ph)*13;
+        ctx.beginPath(); ctx.moveTo(cx2, baseY-58); ctx.lineTo(cx2+sw, baseY); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx2, baseY-58); ctx.lineTo(cx2-sw, baseY); ctx.stroke();
+        ctx.fillStyle = '#22304a';
+        ctx.beginPath(); ctx.roundRect(cx2-13, baseY-125, 26, 72, 10); ctx.fill();
+        ctx.beginPath(); ctx.arc(cx2, baseY-140, 15, 0, 7); ctx.fill();
+        box = [cx2-42, baseY-165, 84, 172];
+      } else if (opt.type === 'vehicle'){
+        ctx.fillStyle = '#c9803a'; ctx.fillRect(cx2-70, baseY-72, 140, 46);
+        ctx.fillStyle = '#a5662c'; ctx.fillRect(cx2-40, baseY-100, 70, 30);
+        ctx.fillStyle = '#222';
+        [[-52],[-28],[26],[50]].forEach(([dx]) => { ctx.beginPath(); ctx.arc(cx2+dx, baseY-18, 15, 0, 7); ctx.fill(); });
+        box = [cx2-84, baseY-112, 168, 116];
+      } else {
+        ctx.fillStyle = '#3d4658'; ctx.fillRect(cx2-52, baseY-52, 104, 26);
+        ctx.fillStyle = '#2b3242'; ctx.fillRect(cx2+26, baseY-78, 12, 28);
+        ctx.fillStyle = '#111'; [[-40],[0],[40]].forEach(([dx]) => { ctx.beginPath(); ctx.arc(cx2+dx, baseY-14, 12, 0, 7); ctx.fill(); });
+        box = [cx2-64, baseY-88, 128, 92];
+      }
+    } else {
+      const ox = inRoiX, oy = beamTop + (beamBot-beamTop)*0.30;
+      const gg = ctx.createLinearGradient(ox-20,0,ox+20,0);
+      gg.addColorStop(0,'#8f97a5'); gg.addColorStop(0.5+0.3*Math.sin(t*2),'#e6ecf5'); gg.addColorStop(1,'#767e8c');
+      ctx.fillStyle = gg; ctx.fillRect(ox-22, oy-26, 44, 26);
+      ctx.fillStyle = '#5f6875'; ctx.fillRect(ox-22, oy-6, 44, 6);
+      ctx.strokeStyle = '#39404c'; ctx.strokeRect(ox-22, oy-26, 44, 26);
+      box = [ox-38, oy-40, 76, 52];
+    }
+    if (box){
+      const [bx,by,bw,bh] = box;
+      const conf = Math.min(0.99, Math.max(0.5, opt.conf + 0.02*Math.sin(t*3)));
+      ctx.strokeStyle = T.color; ctx.lineWidth = 2.5; ctx.strokeRect(bx,by,bw,bh);
+      ctx.lineWidth = 4;
+      [[bx,by,1,0],[bx,by,0,1],[bx+bw,by,-1,0],[bx+bw,by,0,1],[bx,by+bh,1,0],[bx,by+bh,0,-1],[bx+bw,by+bh,-1,0],[bx+bw,by+bh,0,-1]]
+        .forEach(([x,y,dx,dy]) => { ctx.beginPath(); ctx.moveTo(x+dx*14,y+dy*14); ctx.lineTo(x,y); ctx.stroke(); });
+      const lb = `${T.cls} ${conf.toFixed(2)}  ID:${opt.trackId||1}`;
+      ctx.font = 'bold 13px Consolas, monospace';
+      const lw = ctx.measureText(lb).width + 12;
+      ctx.fillStyle = T.color; ctx.fillRect(bx, Math.max(0,by-22), lw, 20);
+      ctx.fillStyle = '#fff'; ctx.fillText(lb, bx+6, Math.max(13,by-7));
+    }
+  }
+  if (opt.frame && opt.frame !== 1) ctx.restore();
+
+  // ---- 前景暗角 ----
+  g = ctx.createLinearGradient(0, H*0.76, 0, H);
+  g.addColorStop(0, 'rgba(25,32,40,0)'); g.addColorStop(1, 'rgba(25,32,40,.15)');
+  ctx.fillStyle = g; ctx.fillRect(0, H*0.76, W, H*0.24);
+
+  if (mini && !opt.hud) return;
+  if (opt.hud){
+    const gg2 = ctx.createLinearGradient(0,0,0,34);
+    gg2.addColorStop(0,'rgba(10,12,16,.55)'); gg2.addColorStop(1,'rgba(10,12,16,0)');
+    ctx.fillStyle = gg2; ctx.fillRect(0,0,W,34);
+    ctx.fillStyle = '#fff'; ctx.font = '600 11px Microsoft YaHei';
+    ctx.fillText(`${opt.cam ? opt.cam.id.toUpperCase() : ''} · 现场`, 8, 15);
+    if (Math.floor(t*1.2)%2===0){ ctx.fillStyle = '#ff5252'; ctx.beginPath(); ctx.arc(W-42, 10, 3.5, 0, 7); ctx.fill(); }
+    ctx.font = '600 9px Consolas, monospace'; ctx.fillStyle = 'rgba(255,255,255,.92)';
+    ctx.fillText('LIVE', W-32, 13);
+    ctx.fillStyle = 'rgba(10,12,16,.5)'; ctx.fillRect(W-72, H-21, 64, 15);
+    ctx.font = '9px Consolas, monospace'; ctx.fillStyle = '#fff';
+    ctx.fillText(fmtT(new Date()), W-66, H-9);
+    return;
+  }
+  ctx.fillStyle = 'rgba(0,0,0,.42)'; ctx.fillRect(0,0,W,30); ctx.fillRect(0,H-28,W,28);
+  ctx.fillStyle = '#fff'; ctx.font = '14px Microsoft YaHei';
+  const vd = opt.vDate || new Date();
+  ctx.fillText(`▲ ${opt.cam ? opt.cam.name : ''}   ${fmtDT(vd)}`, 12, 20);
+  ctx.fillText(`嘉定磁浮试验线 · ${opt.mode === 'live' ? '现场监控' : '历史录像回放'}`, 12, H-9);
+  const rt = `${opt.speedTxt || '历史回放 ×60'} ｜ YOLOv8n conf≥0.45`;
+  ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.font = '12px Consolas, monospace';
+  ctx.fillText(rt, W - ctx.measureText(rt).width - 14, 20);
+  if (opt.blink && Math.floor(t*1.4)%2===0){
+    ctx.fillStyle = '#ff4d4f'; ctx.beginPath(); ctx.arc(W-28, H-14, 6, 0, 7); ctx.fill();
+    ctx.font = '12px Microsoft YaHei'; ctx.fillText('告警', W-88, H-9);
+  }
+}
+
+function makeSnap(event){
+  const c = document.createElement('canvas'); c.width = 480; c.height = 270;
+  const ctx = c.getContext('2d');
+  drawScene(ctx, 480, 270, { cam: camOf(event.camId), type: event.typeKey, conf: event.conf,
+    trackId: event.trackId, t: 3.2, hasBox: true, blink: false, vDate: event.time, speedTxt: '', mode: 'review' });
+  return c.toDataURL('image/jpeg', 0.82);
+}
+
+/* ================= 事件生成与流转 ================= */
+function newEvent(camId, typeKey, conf, when){
+  seq++;
+  const e = {
+    id: `EVT-${fmtDay(when||new Date())}-${String(seq).padStart(4,'0')}`,
+    camId, typeKey,
+    conf: conf || +(0.62 + Math.random()*0.33).toFixed(2),
+    trackId: seq,
+    bbox: [0.40, 0.42, 0.10, 0.34],
+    time: when || new Date(),
+    status: 'alarm', ledgerStatus: null,
+    confirmedTime: null, confirmer: null,
+    logs: [],
+    snap: null,
+  };
+  e.logs.push({ time: e.time, who: '算法服务', text:
+    `离线检测到疑似${TYPES[typeKey].label}（置信度 ${e.conf}），与图像关注区相交，触发告警` });
+  e.snap = makeSnap(e);
+  return e;
+}
+function log(e, who, text){ e.logs.push({ time: new Date(), who, text }); }
+
+function confirmEvent(id){
+  const e = events.find(x=>x.id===id); if (!e || e.status!=='alarm') return;
+  e.status = 'ledger'; e.ledgerStatus = '待处理';
+  e.confirmedTime = new Date(); e.confirmer = OPERATORS[seq % OPERATORS.length];
+  log(e, e.confirmer, '回放录像人工复核，确认为真实异常，事件进入台账（待处理）');
+  refreshAll(); syncPlayerButtons(); toast(`事件 ${e.id} 已确认，进入台账【待处理】`);
+}
+function falseEvent(id){
+  const e = events.find(x=>x.id===id); if (!e || e.status!=='alarm') return;
+  e.status = 'false';
+  log(e, OPERATORS[seq % OPERATORS.length], '回放录像核实为误报（非异常目标），告警关闭，点位恢复正常');
+  refreshAll(); syncPlayerButtons(); toast(`事件 ${e.id} 已标记为误报`);
+}
+function advanceEvent(id){
+  const e = events.find(x=>x.id===id);
+  if (!e || e.status !== 'ledger') return;
+  if (e.ledgerStatus === '待处理'){
+    e.ledgerStatus = '处置中';
+    log(e, e.confirmer, '通知现场人员前往处置，事件状态：待处理 → 处置中');
+    toast(`事件 ${e.id} 开始处置`);
+  } else if (e.ledgerStatus === '处置中'){
+    e.ledgerStatus = '已结束';
+    log(e, e.confirmer, '现场处置完毕，异常已消除，事件闭合：处置中 → 已结束');
+    toast(`事件 ${e.id} 处置完成，已闭合`);
+  }
+  refreshAll();
+}
+
+function simulateAlarm(camId, typeKey){
+  const busy = new Set(events.filter(e => evStatus(e)==='alarm' || evStatus(e)==='ledger').map(e=>e.camId));
+  let cam = camId;
+  if (!cam){
+    const free = CAMS.filter(c => !busy.has(c.id));
+    if (!free.length) { toast('所有点位均有事件在处理中'); return; }
+    cam = free[Math.random()*free.length|0].id;
+  }
+  const keys = ['person','person','vehicle','inspect','metal','magnetic'];
+  const when = new Date(Date.now() - (5 + Math.random()*35) * 60000);
+  const e = newEvent(cam, typeKey || keys[Math.random()*keys.length|0], null, when);
+  events.unshift(e);
+  selectEvent(e.id, { zoom:false });
+  refreshAll();
+  const alarmCams = activeAlarmCams();
+  if (alarmCams.length > 1) zoomToFit(alarmCams);
+  else zoomTo(camOf(cam), 2.4);
+  const card = document.querySelector(`.card[data-id="${e.id}"]`);
+  if (card) card.classList.add('new');
+  toast(`检测任务在历史录像中发现告警：${TYPES[e.typeKey].label} @ ${camOf(cam).name}（当前 ${alarmCams.length} 处未确认）`);
+}
+
+function seed(){
+  const now = Date.now();
+  const e1 = newEvent('ch07','person',0.91,new Date(now-3.2*3600e3));
+  e1.status='ledger'; e1.ledgerStatus='已结束'; e1.confirmedTime=new Date(now-3.1*3600e3);
+  e1.confirmer=OPERATORS[0];
+  e1.logs.push(
+    {time:new Date(now-3.1*3600e3), who:OPERATORS[0], text:'回放录像人工复核，确认为真实异常，事件进入台账（待处理）'},
+    {time:new Date(now-3.0*3600e3), who:OPERATORS[0], text:'通知现场人员前往处置，事件状态：待处理 → 处置中'},
+    {time:new Date(now-2.6*3600e3), who:OPERATORS[0], text:'现场人员已撤离，确认无人员滞留，事件闭合：处置中 → 已结束'});
+  const e2 = newEvent('ch06','metal',0.78,new Date(now-1.4*3600e3));
+  e2.status='ledger'; e2.ledgerStatus='已结束'; e2.confirmedTime=new Date(now-1.3*3600e3);
+  e2.confirmer=OPERATORS[1];
+  e2.logs.push(
+    {time:new Date(now-1.3*3600e3), who:OPERATORS[1], text:'回放录像人工复核，确认为真实异常，事件进入台账（待处理）'},
+    {time:new Date(now-1.2*3600e3), who:OPERATORS[1], text:'通知现场人员前往处置，事件状态：待处理 → 处置中'},
+    {time:new Date(now-0.9*3600e3), who:OPERATORS[1], text:'异物已清除并登记留存，线路恢复正常，事件闭合：处置中 → 已结束'});
+  const e3 = newEvent('ch03','inspect',0.66,new Date(now-0.6*3600e3));
+  e3.status='false';
+  e3.logs.push({time:new Date(now-0.55*3600e3), who:OPERATORS[2], text:'回放录像核实为误报（轨检车按计划作业），告警关闭，点位恢复正常'});
+  events = [e3, e2, e1];
+}
+
+/* ================= 渲染 ================= */
+function refreshAll(){
+  renderAlarms(); renderMap(); renderDetail(); renderLedger(); updateTileStates(); updateHeadCounts();
+  document.body.classList.toggle('has-alarms', hasActive());
+  if (!hasActive()) resetView(); else applyZoom();
+}
+function updateHeadCounts(){
+  $('#stToday').textContent = events.filter(e => fmtDay(e.time)===fmtDay(new Date())).length;
+  $('#stAlarm').textContent = events.filter(e=>e.status==='alarm').length;
+  $('#stDoing').textContent = events.filter(e=>e.status==='ledger'&&(e.ledgerStatus==='待处理'||e.ledgerStatus==='处置中')).length;
+}
+
+function urgency(e){
+  const s = evStatus(e);
+  if (s === 'alarm') return 0;
+  if (s === 'ledger') return e.ledgerStatus === '处置中' ? 1 : 2;
+  if (s === 'done') return 3;
+  return 4;
+}
+function renderAlarms(){
+  const box = $('#alarmList');
+  const list = events.filter(e => {
+    const s = evStatus(e);
+    if (alarmFilter==='all') return true;
+    if (alarmFilter==='alarm') return s==='alarm';
+    if (alarmFilter==='ledger') return s==='ledger'||s==='done';
+    if (alarmFilter==='false') return s==='false';
+  }).sort((a,b) => {
+    const ua = urgency(a), ub = urgency(b);
+    if (ua !== ub) return ua - ub;
+    return b.time - a.time;
+  });
+  const nAlarm = events.filter(e=>evStatus(e)==='alarm').length;
+  const nDoing = events.filter(e=>e.status==='ledger'&&(e.ledgerStatus==='待处理'||e.ledgerStatus==='处置中')).length;
+  $('#alarmCnt').textContent = `未确认 ${nAlarm} · 处理中 ${nDoing}`;
+  const stTxt = { alarm:'未确认', done:'已结束', false:'误报' };
+  box.innerHTML = list.map(e => {
+    const T = TYPES[e.typeKey], s = evStatus(e);
+    const durTxt = (s==='alarm') ? `<span class="dur" data-t0="${e.time.getTime()}">等待确认 ${dur(Date.now()-e.time.getTime())}</span>` : '';
+    const st = s==='ledger' ? `<span class="st st-ledger">${e.ledgerStatus}</span>`
+      : `<span class="st st-${s}">${stTxt[s]}</span>`;
+    return `<div class="card ${selId===e.id?'sel':''}" data-id="${e.id}">
+      <div class="row1"><span class="badge" style="background:${T.badgeBg};color:${T.badgeFg}">${T.label}</span>${durTxt}${st}</div>
+      <div class="row2"><b>${camOf(e.camId).name}</b> · ${camOf(e.camId).zone}</div>
+      <div class="row3">${fmtDT(e.time)} · 置信度 ${e.conf} · ${T.source.split(' ')[0]}</div>
+    </div>`;
+  }).join('') || `<div class="empty">暂无告警</div>`;
+  box.querySelectorAll('.card').forEach(c => c.onclick = () => selectEvent(c.dataset.id, { zoom:true }));
+}
+
+function renderMap(){
+  const box = $('#mapBox');
+  box.querySelectorAll('.mark').forEach(m => m.remove());
+  CAMS.forEach(cam => {
+    const act = events.find(e => e.camId===cam.id && (evStatus(e)==='alarm' || evStatus(e)==='ledger'));
+    const m = document.createElement('div');
+    m.className = 'mark' + (act ? (evStatus(act)==='alarm' ? ' alarm' : ' active-ledger') : '');
+    m.style.left = cam.x + '%'; m.style.top = cam.y + '%';
+    m.title = `${cam.name} · ${cam.zone}`;
+    m.innerHTML = `<span class="dot"></span><span class="pill ${cam.lbl||''}">${cam.id.toUpperCase()}</span>`;
+    m.onclick = () => {
+      if (act){
+        selectEvent(act.id, { zoom:true });
+        if (evStatus(act)==='alarm') openPlayer(cam, act);
+      } else openPlayer(cam, null);
+    };
+    box.appendChild(m);
+  });
+}
+
+/* ===== 视频墙 ===== */
+function buildTiles(){
+  $('#tileWall').innerHTML = CAMS.map(cam => `
+    <div class="vtile" data-cam="${cam.id}" title="${cam.name} · ${cam.zone}（点击查看现场监控）">
+      <canvas width="256" height="144"></canvas>
+      <div class="vlab"><i></i>${cam.name}<span class="vc">--:--:--</span></div>
+    </div>`).join('');
+  document.querySelectorAll('.vtile').forEach(v => v.onclick = () => {
+    const cam = camOf(v.dataset.cam);
+    const act = events.find(e => e.camId===cam.id && evStatus(e)==='alarm');
+    if (act){ selectEvent(act.id, { zoom:true }); openPlayer(cam, act); }
+    else openPlayer(cam, null);
+  });
+}
+function updateTileStates(){
+  document.querySelectorAll('.vtile').forEach(v => {
+    const act = events.find(e => e.camId===v.dataset.cam && (evStatus(e)==='alarm' || evStatus(e)==='ledger'));
+    v.classList.toggle('alarm', !!act && evStatus(act)==='alarm');
+    v.classList.toggle('active-ledger', !!act && evStatus(act)==='ledger');
+    v.querySelector('.vlab i').className = act ? (evStatus(act)==='alarm' ? 'alarm' : 'active-ledger') : '';
+  });
+}
+let lastTileDraw = 0;
+function tileLoop(now){
+  requestAnimationFrame(tileLoop);
+  if (now - lastTileDraw < 110) return;
+  lastTileDraw = now;
+  if ($('#view-monitor').style.display === 'none') return;
+  if ($('#playerModal').classList.contains('open')) return;   // 播放器打开时暂停视频墙渲染
+  document.querySelectorAll('.vtile').forEach((v, idx) => {
+    const cv = v.querySelector('canvas'), ctx = cv.getContext('2d');
+    ctx.save(); ctx.scale(0.25, 0.25);
+    if (idx % 2 === 1){ ctx.translate(960, 0); ctx.scale(-1, 1); }
+    drawScene(ctx, 960, 540, { cam: camOf(v.dataset.cam), t: now/1000, mini: true,
+      seed: idx, frame: 1.45, mode: 'live' });
+    ctx.restore();
+    drawTileHUD(ctx, cv.width, cv.height, camOf(v.dataset.cam), now/1000);
+  });
+}
+function drawTileHUD(ctx, W, H, cam, t){
+  const g = ctx.createLinearGradient(0,0,0,34);
+  g.addColorStop(0,'rgba(10,12,16,.55)'); g.addColorStop(1,'rgba(10,12,16,0)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,34);
+  ctx.fillStyle = '#fff'; ctx.font = '600 11px Microsoft YaHei';
+  ctx.fillText(`${cam.id.toUpperCase()} · 现场`, 8, 15);
+  if (Math.floor(t*1.2)%2===0){
+    ctx.fillStyle = '#ff5252'; ctx.beginPath(); ctx.arc(W-42, 10, 3.5, 0, 7); ctx.fill();
+  }
+  ctx.font = '600 9px Consolas, monospace'; ctx.fillStyle = 'rgba(255,255,255,.92)';
+  ctx.fillText('LIVE', W-32, 13);
+  ctx.fillStyle = 'rgba(10,12,16,.5)'; ctx.fillRect(W-72, H-21, 64, 15);
+  ctx.font = '9px Consolas, monospace'; ctx.fillStyle = '#fff';
+  ctx.fillText(fmtT(new Date()), W-66, H-9);
+}
+setInterval(() => {
+  document.querySelectorAll('.vtile .vc').forEach(el => el.textContent = fmtT(new Date()));
+}, 1000);
+
+function selectEvent(id, opt){
+  selId = id;
+  renderAlarms(); renderMap(); renderDetail();
+  const e = events.find(x=>x.id===id);
+  if (e && opt && opt.zoom) zoomTo(camOf(e.camId), evStatus(e)==='alarm' ? 2.4 : 2.0);
+}
+
+function renderDetail(){
+  const drawer = $('#detailDrawer');
+  const e = events.find(x=>x.id===selId);
+  if (!e){ drawer.classList.remove('open'); return; }
+  drawer.classList.add('open');
+  $('#detailId').textContent = e.id;
+  const body = $('#detailBody');
+  const T = TYPES[e.typeKey], s = evStatus(e);
+  const stPill = s==='alarm' ? '<span class="stat-pill sp-pending">未确认</span>'
+    : s==='false' ? '<span class="stat-pill sp-false">误报</span>'
+    : e.ledgerStatus==='待处理' ? '<span class="stat-pill sp-pending">待处理</span>'
+    : e.ledgerStatus==='处置中' ? '<span class="stat-pill sp-doing">处置中</span>'
+    : '<span class="stat-pill sp-done">已结束</span>';
+  let btns = '';
+  if (s === 'alarm')
+    btns = `<button class="btn plain" id="dView">查看现场监控</button>
+            <button class="btn primary" id="dConfirm">确认告警</button>
+            <button class="btn danger" id="dFalse">误报</button>`;
+  else if (s === 'ledger')
+    btns = `<button class="btn plain" id="dView">查看现场监控</button>
+            <button class="btn primary" id="dAdv">${e.ledgerStatus==='待处理'?'开始处置':'完成处置'}</button>`;
+  else
+    btns = `<button class="btn plain" id="dView">查看现场监控</button>`;
+  body.innerHTML = `
+    <div class="kv"><span class="k">事件类型</span><span class="v">${T.label}（${T.source}）</span></div>
+    <div class="kv"><span class="k">点位</span><span class="v">${camOf(e.camId).name} · ${camOf(e.camId).zone}</span></div>
+    <div class="kv"><span class="k">触发时间</span><span class="v">${fmtDT(e.time)}</span></div>
+    <div class="kv"><span class="k">置信度</span><span class="v">${e.conf}</span></div>
+    <div class="kv"><span class="k">检测类别</span><span class="v">${T.cls} · ID:${e.trackId}</span></div>
+    <div class="kv"><span class="k">当前状态</span><span class="v">${stPill}${e.confirmer?` · ${e.confirmer}`:''}</span></div>
+    <div class="snap-box"><img src="${e.snap}" alt="告警快照"><div class="cap">告警快照 · 含检测框与图像关注区</div></div>
+    <div class="actions">${btns}</div>
+    <div class="tl-title">处置记录</div>
+    <div class="tl">${[...e.logs].reverse().map(l =>
+      `<div class="tl-item"><div>${l.text}</div><div class="t">${fmtDT(l.time)}<span class="who">${l.who}</span></div></div>`).join('')}
+    </div>`;
+  const q = id2 => body.querySelector(id2);
+  if (q('#dView')) q('#dView').onclick = () => openPlayer(camOf(e.camId), e);
+  if (q('#dConfirm')) q('#dConfirm').onclick = () => confirmEvent(e.id);
+  if (q('#dFalse')) q('#dFalse').onclick = () => falseEvent(e.id);
+  if (q('#dAdv')) q('#dAdv').onclick = () => advanceEvent(e.id);
+}
+$('#detailClose').onclick = () => {
+  selId = null;
+  $('#detailDrawer').classList.remove('open');
+  renderAlarms(); renderMap();
+  if (!hasActive()) resetView(); else applyZoom();
+};
+
+function renderLedger(){
+  $('#ledgerPill').textContent = events.filter(e => e.status==='ledger' && e.ledgerStatus!=='已结束').length;
+  const list = events.filter(e => e.status !== 'alarm').filter(e => {
+    if (ledgerFilter==='all') return true;
+    const s = e.status==='false' ? '误报' : e.ledgerStatus;
+    return s === ledgerFilter;
+  });
+  $('#ledgerBody').innerHTML = list.map(e => {
+    const T = TYPES[e.typeKey];
+    const st = e.status==='false' ? '<span class="stat-pill sp-false">误报</span>'
+      : e.ledgerStatus==='待处理' ? '<span class="stat-pill sp-pending">待处理</span>'
+      : e.ledgerStatus==='处置中' ? '<span class="stat-pill sp-doing">处置中</span>'
+      : '<span class="stat-pill sp-done">已结束</span>';
+    const last = e.logs[e.logs.length-1];
+    let adv = '';
+    if (e.status==='ledger' && e.ledgerStatus==='待处理') adv = `<button class="op adv" data-adv="${e.id}">开始处置</button>`;
+    if (e.status==='ledger' && e.ledgerStatus==='处置中') adv = `<button class="op adv" data-adv="${e.id}">完成处置</button>`;
+    return `<tr>
+      <td>${e.id}</td>
+      <td><span class="badge" style="background:${T.badgeBg};color:${T.badgeFg}">${T.label}</span></td>
+      <td>${camOf(e.camId).name} · ${camOf(e.camId).zone}</td>
+      <td>${fmtDT(e.time)}</td>
+      <td>${e.confirmedTime ? fmtDT(e.confirmedTime) : '—'}</td>
+      <td>${e.confirmer || '—'}</td>
+      <td>${st}</td>
+      <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis">${last ? last.text : ''}</td>
+      <td><button class="op" data-sel="${e.id}">详情</button>${adv}</td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="9" style="text-align:center;color:#b4b7bc;padding:30px">暂无已确认事件</td></tr>`;
+  document.querySelectorAll('[data-sel]').forEach(b => b.onclick = () => {
+    switchView('monitor');
+    selectEvent(b.dataset.sel, { zoom:true });
+  });
+  document.querySelectorAll('[data-adv]').forEach(b => b.onclick = () => advanceEvent(b.dataset.adv));
+
+  const today = events.filter(e => fmtDay(e.time)===fmtDay(new Date())).length;
+  const n = { today,
+    alarm: events.filter(e=>e.status==='alarm').length,
+    pending: events.filter(e=>e.status==='ledger'&&e.ledgerStatus==='待处理').length,
+    doing: events.filter(e=>e.status==='ledger'&&e.ledgerStatus==='处置中').length,
+    done: events.filter(e=>e.status==='ledger'&&e.ledgerStatus==='已结束').length,
+    falseE: events.filter(e=>e.status==='false').length };
+  $('#stats').innerHTML = `
+    <div class="stat"><div class="num">${n.today}</div><div class="lbl">今日告警总数</div></div>
+    <div class="stat hot"><div class="num">${n.alarm}</div><div class="lbl">未确认告警</div></div>
+    <div class="stat mid"><div class="num">${n.pending}</div><div class="lbl">待处理</div></div>
+    <div class="stat cy"><div class="num">${n.doing}</div><div class="lbl">处置中</div></div>
+    <div class="stat ok"><div class="num">${n.done}</div><div class="lbl">已结束</div></div>
+    <div class="stat"><div class="num">${n.falseE}</div><div class="lbl">误报</div></div>`;
+}
+
+/* ================= 现场监控（实时 / 回看） ================= */
+function openPlayer(cam, event){
+  $('#playerModal').classList.add('open');
+  const pc = { cam, event, raf: 0, dragging: false, mode: 'live' };
+  playerCtx = pc;
+  $('#plTitle').textContent = `${cam.name} · 现场监控`;
+  $('#plSub').textContent = `${cam.zone} ｜ ${event ? '关联事件 ' + event.id + ' · ' + TYPES[event.typeKey].label : '常规巡查'}`;
+  enterLive(pc);
+
+  cancelAnimationFrame(pc.raf);
+  const cv = $('#feed'), ctx = cv.getContext('2d');
+  let lastSec = -1;
+  function frame(now){
+    if (playerCtx !== pc) return;
+    if (pc.mode === 'live'){
+      pc.vNow = Date.now();
+    } else if (!pc.dragging){
+      pc.vNow = pc.vAtStart + (now - pc.t0Real) * pc.speed;
+      if (pc.vNow > pc.rangeEnd){ pc.vNow = pc.rangeStart; pc.vAtStart = pc.vNow; pc.t0Real = now; }
+    }
+    const t = (now / 1000);
+    drawScene(ctx, cv.width, cv.height, {
+      cam, type: pc.event && pc.event.typeKey, conf: pc.event && pc.event.conf, trackId: pc.event && pc.event.trackId,
+      t,
+      hasBox: pc.mode === 'review' && !!pc.event,
+      blink: pc.mode === 'live' && !!(pc.event && pc.event.status === 'alarm'),
+      vDate: new Date(pc.vNow),
+      speedTxt: pc.mode === 'live' ? '实时画面 LIVE' : `历史回放 ×${pc.speed}`,
+      mode: pc.mode,
+    });
+    if (pc.mode === 'review'){
+      const frac = (pc.vNow - pc.rangeStart) / (pc.rangeEnd - pc.rangeStart);
+      if (!pc.dragging) $('#pbRange').value = Math.round(frac * 1000);
+    }
+    const vd = new Date(pc.vNow);
+    if (vd.getSeconds() !== lastSec){
+      lastSec = vd.getSeconds();
+      $('#pbClock').textContent = `${fmtDT(vd)}${pc.mode === 'live' ? '' : ' ×' + pc.speed}`;
+    }
+    pc.raf = requestAnimationFrame(frame);
+  }
+  pc.raf = requestAnimationFrame(frame);
+}
+function enterLive(pc){
+  pc.mode = 'live';
+  pc.speed = 1;
+  pc.vNow = Date.now(); pc.vAtStart = pc.vNow; pc.t0Real = performance.now();
+  $('#pbBar').style.display = 'none';
+  $('#modeLive').classList.add('active'); $('#modeReview').classList.remove('active');
+  syncPlayerButtons();
+}
+function enterReview(pc){
+  pc.mode = 'review';
+  const anchor = pc.event ? pc.event.time.getTime() : Date.now() - 30*60000;
+  pc.rangeStart = anchor - 60*60000;
+  pc.rangeEnd   = anchor + 60*60000;
+  pc.vNow = pc.event ? anchor - 3*60000 : anchor;
+  pc.speed = 60;
+  pc.vAtStart = pc.vNow; pc.t0Real = performance.now();
+  $('#pbDate').value = dayStr(new Date(pc.rangeStart));
+  $('#pbStart').value = fmtT(new Date(pc.rangeStart)).slice(0,5);
+  $('#pbEnd').value = fmtT(new Date(pc.rangeEnd)).slice(0,5);
+  $('#pbSpeed').value = String(pc.speed);
+  $('#pbBar').style.display = '';
+  $('#modeReview').classList.add('active'); $('#modeLive').classList.remove('active');
+  syncPlayerButtons();
+}
+$('#modeLive').onclick = () => {
+  const pc = playerCtx; if (!pc || pc.mode === 'live') return;
+  enterLive(pc); toast('已切回实时画面');
+};
+$('#modeReview').onclick = () => {
+  const pc = playerCtx; if (!pc || pc.mode === 'review') return;
+  enterReview(pc);
+  toast(pc.event ? '已进入回看，可拖动时间轴或点「回到事发时刻」' : '已进入回看，请选择日期与时间段');
+};
+function syncPlayerButtons(){
+  const pc = playerCtx; if (!pc) return;
+  const e = pc.event;
+  const canJudge = pc.mode === 'review' && e && e.status === 'alarm';
+  $('#plConfirm').style.display = canJudge ? '' : 'none';
+  $('#plFalse').style.display = canJudge ? '' : 'none';
+  $('#pbJump').style.display = e ? '' : 'none';
+}
+function closePlayer(){
+  if (playerCtx) cancelAnimationFrame(playerCtx.raf);
+  $('#playerModal').classList.remove('open');
+  playerCtx = null;
+}
+$('#plClose').onclick = closePlayer;
+$('#playerModal').onclick = ev => { if (ev.target.id==='playerModal') closePlayer(); };
+$('#plConfirm').onclick = () => { if (playerCtx && playerCtx.event) confirmEvent(playerCtx.event.id); };
+$('#plFalse').onclick   = () => { if (playerCtx && playerCtx.event) falseEvent(playerCtx.event.id); };
+
+$('#pbRange').addEventListener('input', ev => {
+  const pc = playerCtx; if (!pc) return;
+  pc.dragging = true;
+  const frac = +ev.target.value / 1000;
+  pc.vNow = pc.rangeStart + frac * (pc.rangeEnd - pc.rangeStart);
+});
+$('#pbRange').addEventListener('change', () => {
+  const pc = playerCtx; if (!pc) return;
+  pc.vAtStart = pc.vNow; pc.t0Real = performance.now(); pc.dragging = false;
+});
+function rebindRange(){
+  const pc = playerCtx; if (!pc) return;
+  const d = $('#pbDate').value || dayStr(new Date());
+  const [sh, sm] = ($('#pbStart').value || '00:00').split(':').map(Number);
+  const [eh, em] = ($('#pbEnd').value || '23:59').split(':').map(Number);
+  const base = new Date(d+'T00:00:00');
+  pc.rangeStart = base.getTime() + (sh*60+sm)*60000;
+  pc.rangeEnd   = base.getTime() + (eh*60+em)*60000;
+  if (pc.rangeEnd <= pc.rangeStart) pc.rangeEnd = pc.rangeStart + 30*60000;
+  pc.vNow = Math.min(Math.max(pc.vNow, pc.rangeStart), pc.rangeEnd);
+  pc.vAtStart = pc.vNow; pc.t0Real = performance.now();
+}
+$('#pbDate').onchange = rebindRange;
+$('#pbStart').onchange = rebindRange;
+$('#pbEnd').onchange = rebindRange;
+$('#pbSpeed').onchange = ev => {
+  const pc = playerCtx; if (!pc) return;
+  pc.speed = +ev.target.value;
+  pc.vAtStart = pc.vNow; pc.t0Real = performance.now();
+};
+$('#pbJump').onclick = () => {
+  const pc = playerCtx; if (!pc || !pc.event) return;
+  if (pc.mode !== 'review') enterReview(pc);
+  pc.vNow = pc.event.time.getTime() - 8000;
+  pc.speed = 1; $('#pbSpeed').value = '1';
+  pc.vAtStart = pc.vNow; pc.t0Real = performance.now();
+  toast('已定位到事发时刻，1× 速度回看');
+};
+
+/* ================= 视图切换 / 全局 ================= */
+function switchView(v){
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view===v));
+  $('#view-monitor').style.display = v==='monitor' ? 'flex' : 'none';
+  $('#view-ledger').style.display  = v==='ledger' ? 'flex' : 'none';
+  if (v==='monitor') fit();
+}
+document.querySelectorAll('.nav-btn').forEach(b => b.onclick = () => switchView(b.dataset.view));
+document.querySelectorAll('#alarmFilter button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#alarmFilter button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); alarmFilter = b.dataset.f; renderAlarms();
+});
+document.querySelectorAll('#ledgerFilter button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#ledgerFilter button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); ledgerFilter = b.dataset.f; renderLedger();
+});
+$('#btnSimAlarm').onclick = () => simulateAlarm();
+$('#btnReset').onclick = resetView;
+$('#autoSim').onchange = ev => {
+  if (ev.target.checked) loopAuto();
+  else { clearTimeout(autoTimer); autoTimer = null; }
+};
+function loopAuto(){
+  simulateAlarm();
+  autoTimer = setTimeout(loopAuto, 18000 + Math.random()*17000);
+}
+document.addEventListener('keydown', e => { if (e.key==='Escape') closePlayer(); });
+
+setInterval(() => {
+  $('#clock').textContent = new Date().toLocaleString('zh-CN', { hour12:false });
+  document.querySelectorAll('.dur').forEach(el =>
+    el.textContent = `等待确认 ${dur(Date.now() - +el.dataset.t0)}`);
+}, 1000);
+
+/* 初始化 */
+(function init(){
+  const pts = TRACK_PTS.map(p=>p.join(',')).join(' ');
+  $('#trackLine').setAttribute('points', pts);
+  $('#trackCase').setAttribute('points', pts);
+  seed();
+  buildTiles();
+  refreshAll();
+  $('#clock').textContent = new Date().toLocaleString('zh-CN', { hour12:false });
+  new ResizeObserver(() => fit()).observe($('#stageInner'));
+  fit();
+  requestAnimationFrame(tileLoop);
+})();
+</script>
+</body>
+</html>
