@@ -1,6 +1,6 @@
 # 数据说明
 
-数据和 `runtime/` 运行资产在本仓库 [v0.1.0 Release](https://github.com/BrainMozi/maglev-track-anomaly-detection/releases/tag/v0.1.0) 中按目录分包。所需 ZIP 解压到仓库根目录即可还原下面的路径。
+这份文件记录项目已有的数据。图像、标注和模型文件将按下述目录通过 Git LFS 放进仓库；远端推送完成前，此页仅作数据说明，不提供下载。
 
 | 数据 | 数量 | 标注与用途 |
 | --- | --- | --- |
