@@ -32,7 +32,7 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
-testpaths = ["tests"]
+testpaths = ["extras/tests"]
 
 [tool.ruff]
 line-length = 100

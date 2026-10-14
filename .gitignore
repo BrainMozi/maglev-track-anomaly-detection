@@ -13,7 +13,7 @@ desktop.ini
 .env
 *.key
 *.pem
-configs/local*.json
+extras/configs/local*.json
 outputs/
 results/
 logs/
