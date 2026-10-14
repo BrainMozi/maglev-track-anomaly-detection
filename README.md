@@ -22,4 +22,11 @@
 
 YOLO 数据现有 **3116 张图**，其中 **117 份人工精确框标注**；轨面异物数据 **3275 张图**，正常 **2151**、异常 **1124**，另有 **124 张人工圈定的异物区域**。AI 标注只作为下一轮人工标注的预标注。细分见 [`data/README.md`](data/README.md)。
 
-图像与模型文件正按 Git LFS 加入同一仓库，完成后分别位于 `data/` 与 `runtime/`。
+## 获取项目
+
+```bash
+git clone https://github.com/BrainMozi/maglev-track-anomaly-detection.git
+cd maglev-track-anomaly-detection
+```
+
+**当前 GitHub 只发布了源码和数据说明。**图像、标注和模型资产仅存在于维护者本地的 Git LFS 提交中，尚未推送到远端；现在执行 `git lfs pull` 也拿不到这些文件。需要它们时请联系维护者，不要把本地文件清单当作已公开下载链接。数据推送完成后，安装 Git LFS 并运行 `git lfs pull` 即可按 `data/`、`runtime/` 原目录获取。
